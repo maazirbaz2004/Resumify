@@ -1,0 +1,38 @@
+# Node.js
+node_modules/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+
+# Environment Variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Mac/OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+frontend/dist/
+frontend/build/
+backend/dist/
+
+# Project Docs (Do not commit)
+implementation_plan.md
+task.md
+walkthrough.md
+*.docx
+*.pdf
