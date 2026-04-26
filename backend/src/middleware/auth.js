@@ -13,7 +13,7 @@ function generateToken(user) {
     { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
   );
 }
-
+//auth middleware check added
 function authMiddleware(req, res, next) {
   const header = req.headers.authorization;
   if (!header || !header.startsWith("Bearer ")) {
