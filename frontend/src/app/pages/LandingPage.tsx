@@ -97,7 +97,7 @@ export default function LandingPage() {
               </h2>
               <p className="text-xl text-muted-foreground font-['DM_Sans'] mb-8">
                 AI-Driven Talent Intelligence & Recruitment Optimization Platform.
-                Transform hiring with data-driven insights and bias-reduced screening.
+                Transform hiring with data driven insights and bias reduced screening.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
