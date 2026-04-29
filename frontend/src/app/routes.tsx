@@ -16,12 +16,13 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import DesignSystem from "./pages/DesignSystem";
 
+/* Central Routing Configuration */
 export const router = createBrowserRouter([
-  {
+  { // Public Landing Page
     path: "/",
     Component: LandingPage,
   },
-  {
+  { // Candidate Routes
     path: "/candidate/onboarding",
     Component: CandidateOnboarding,
   },
