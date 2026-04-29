@@ -42,6 +42,7 @@ export default function CandidateATS() {
   const StatusIcon = (s: string) => s === "pass" ? Check : s === "fail" ? X : AlertTriangle;
 
   return (
+    {/* ATS Title Bar */}
     <div className="flex min-h-screen bg-background">
       <Sidebar type="candidate" />
       <div className="flex-1 ml-60">
