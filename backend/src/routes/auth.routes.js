@@ -20,7 +20,7 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Role must be 'candidate' or 'recruiter'" });
     }
 
-    // Check if email exists
+    // Check for email to see if it exists or not
     const existing = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
     if (existing.rows.length > 0) {
       return res.status(409).json({ error: "Email already registered" });
