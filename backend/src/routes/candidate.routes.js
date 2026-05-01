@@ -81,7 +81,7 @@ router.post("/upload-resume", upload.single("resume"), async (req, res) => {
         candidateId,
       ]
     );
-
+//added candidate profile analysis
     // Save extracted skills
     await pool.query("DELETE FROM candidate_skills WHERE candidate_id = $1", [candidateId]);
     for (const skill of analysis.skills.technical) {
@@ -152,7 +152,7 @@ router.get("/dashboard", async (req, res) => {
     res.status(500).json({ error: "Failed to load dashboard" });
   }
 });
-
+//ATS check implemented properly 
 // GET /api/candidate/ats-check
 router.get("/ats-check", async (req, res) => {
   try {
@@ -182,7 +182,7 @@ router.get("/ats-check", async (req, res) => {
   }
 });
 
-// POST /api/candidate/skill-gap
+// POST, candidate skill gap added
 router.post("/skill-gap", async (req, res) => {
   try {
     const { target_role, required_skills } = req.body;
@@ -207,7 +207,7 @@ router.post("/skill-gap", async (req, res) => {
     res.status(500).json({ error: "Skill gap analysis failed" });
   }
 });
-
+//fetching career path
 // GET /api/candidate/career-path
 router.get("/career-path", async (req, res) => {
   try {
