@@ -1,5 +1,6 @@
 /**
  * Authentication routes: register, login, me
+ * Handles role based entry for Candidates, Recruiters and Administrators
  */
 const express = require("express");
 const bcrypt = require("bcryptjs");
@@ -13,9 +14,11 @@ router.post("/register", async (req, res) => {
   try {
     const { email, password, full_name, role } = req.body;
 
+    //  Ensure necessary data is present for account initialization
     if (!email || !password || !full_name || !role) {
       return res.status(400).json({ error: "All fields required: email, password, full_name, role" });
     }
+    // Restricts registration to primary user roles defined in the use case diagram
     if (!["candidate", "recruiter"].includes(role)) {
       return res.status(400).json({ error: "Role must be 'candidate' or 'recruiter'" });
     }
@@ -26,6 +29,7 @@ router.post("/register", async (req, res) => {
       return res.status(409).json({ error: "Email already registered" });
     }
 
+    // Password storage using hashing
     const password_hash = await bcrypt.hash(password, 10);
     const result = await pool.query(
       `INSERT INTO users (email, password_hash, full_name, role) 
@@ -35,7 +39,11 @@ router.post("/register", async (req, res) => {
 
     const user = result.rows[0];
 
-    // Create role-specific profile
+    /**
+     * Creates the necessary data structures to support role-specific use cases:
+     * - Candidate: Enables "Upload CV", "Parse CV", and "Job Matching"
+     * - Recruiter: Enables "Submit Job Description" and "Rank Candidates"
+     */
     if (role === "candidate") {
       await pool.query("INSERT INTO candidate_profiles (user_id) VALUES ($1)", [user.id]);
     } else if (role === "recruiter") {
@@ -46,6 +54,7 @@ router.post("/register", async (req, res) => {
       );
     }
 
+    // Grant access token immediately after successful sign-up
     const token = generateToken(user);
     res.status(201).json({ user, token });
   } catch (err) {
@@ -63,6 +72,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Email and password required" });
     }
 
+    // Retrieve user record including "is_active" for Admin management features
     const result = await pool.query(
       "SELECT id, email, password_hash, full_name, role, is_active FROM users WHERE email = $1",
       [email]
@@ -72,10 +82,12 @@ router.post("/login", async (req, res) => {
     }
 
     const user = result.rows[0];
+    // Supports Administrator Use Case: "Remove Users" (via suspension)
     if (!user.is_active) {
       return res.status(403).json({ error: "Account is suspended" });
     }
 
+    // Password verification check
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
       return res.status(401).json({ error: "Invalid email or password" });
@@ -93,6 +105,7 @@ router.post("/login", async (req, res) => {
 // GET /api/auth/me
 router.get("/me", authMiddleware, async (req, res) => {
   try {
+    //Fetches current session user data to populate Dashboards (Candidate/Recruiter/Admin)
     const result = await pool.query(
       "SELECT id, email, full_name, role, avatar_url, is_active, created_at FROM users WHERE id = $1",
       [req.user.id]
