@@ -11,23 +11,31 @@ import { useAuth } from "../context/AuthContext";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login } = useAuth(); // Context hook to access centralized auth logic
+
+  // State management for form data and UI feedback
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Verifies credentials and ensures the user possesses the 'admin' role.
   const handleLogin = async () => {
     setLoading(true);
     setError("");
     try {
+      //  Trigger the login request via AuthContext
       const user = await login(email, password);
+      // Even if login is successful, we must check if the actor is an admin.
+      // This prevents Candidates or Recruiters from accessing the Admin Dashboard.
       if (user.role !== "admin") {
         setError("This account is not an admin");
         return;
       }
+      // Navigation: On success, proceed to the specialized Admin Dashboard
       navigate("/admin/dashboard");
     } catch (err: any) {
+      // Handles network errors or "Invalid email/password" from the backend
       setError(err.message || "Login failed");
     } finally {
       setLoading(false);
