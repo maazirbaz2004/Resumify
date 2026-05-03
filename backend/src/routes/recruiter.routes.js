@@ -135,7 +135,7 @@ router.get("/jobs/:id/candidates", async (req, res) => {
     const job = await pool.query("SELECT * FROM jobs WHERE id = $1", [req.params.id]);
     if (job.rows.length === 0) return res.status(404).json({ error: "Job not found" });
 
-    // Get only candidates who have APPLIED to this job
+    // Get only candidates who have "applied" to this job
     const applicants = await pool.query(
       `SELECT cp.id, u.full_name as name, cp.resume_text, a.status, a.match_score, 
               a.skill_match_pct, a.matched_skills, a.missing_skills, a.applied_at
