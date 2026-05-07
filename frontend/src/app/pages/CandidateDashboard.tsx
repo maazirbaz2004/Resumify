@@ -56,7 +56,7 @@ export default function CandidateDashboard() {
       </div>
     );
   }
-
+//commit for final
   if (error || !data) {
     return (
       <div className="flex min-h-screen bg-background">
