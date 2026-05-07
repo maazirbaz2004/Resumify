@@ -84,6 +84,7 @@ export const candidate = {
   },
 
   dashboard: () => request("/candidate/dashboard"),
+  discardResume: () => request("/candidate/resume", { method: "DELETE" }),
 
   atsCheck: (jdText?: string) =>
     request(`/candidate/ats-check${jdText ? `?jd_text=${encodeURIComponent(jdText)}` : ""}`),
