@@ -11,23 +11,26 @@ import { useAuth } from "../context/AuthContext";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-  const { login, isAuthenticated, user, logout } = useAuth();
+    const { login, isAuthenticated, user, logout } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Verifies credentials and ensures the user possesses the 'admin' role.
   const handleLogin = async () => {
     setLoading(true);
     setError("");
     try {
-      const loggedInUser = await login(email, password);
-      if (loggedInUser.role !== "admin") {
+      const user = await login(email, password);
+      if (user.role !== "admin") {
         setError("This account is not an admin");
         return;
       }
+      // Navigation: On success, proceed to the specialized Admin Dashboard
       navigate("/admin/dashboard");
     } catch (err: any) {
+      // Handles network errors or "Invalid email/password" from the backend
       setError(err.message || "Login failed");
     } finally {
       setLoading(false);

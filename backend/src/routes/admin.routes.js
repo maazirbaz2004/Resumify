@@ -10,8 +10,9 @@ const router = express.Router();
 
 router.use(authMiddleware);
 router.use(rbac("admin"));
-
-// GET /api/admin/dashboard
+//improved error logging and response handling in admin dashboard
+// -------------------- GET APIS ----------------------------
+//get /api/admin/dashboard
 router.get("/dashboard", async (req, res) => {
   try {
     const users = await pool.query("SELECT COUNT(*) FROM users");

@@ -10,7 +10,7 @@ import { useAuth } from "../context/AuthContext";
 import { recruiter as recruiterApi } from "../services/api";
 
 const COLORS = ["#C9A84C", "#0D0D0D", "#4CAF50", "#FF9800", "#2196F3", "#9C27B0"];
-
+// to show recruiter analytics
 export default function RecruiterAnalytics() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();

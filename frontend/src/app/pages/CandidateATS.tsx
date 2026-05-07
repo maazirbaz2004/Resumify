@@ -42,6 +42,7 @@ export default function CandidateATS() {
   const StatusIcon = (s: string) => s === "pass" ? Check : s === "fail" ? X : AlertTriangle;
 
   return (
+    {/* ATS Title Bar */}
     <div className="flex min-h-screen bg-background">
       <Sidebar type="candidate" />
       <div className="flex-1 ml-60">
@@ -51,7 +52,7 @@ export default function CandidateATS() {
             <p className="text-muted-foreground font-['DM_Sans']">Ensure your resume passes Applicant Tracking Systems</p>
           </motion.div>
 
-          {/* ATS Score */}
+          {/* ATS Score Showing */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="mb-8">
             <Card className="p-8">
               <div className="flex flex-col items-center">

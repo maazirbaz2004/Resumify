@@ -31,7 +31,7 @@ export default function CandidateSkillGap() {
 
   useEffect(() => {
     if (!isAuthenticated) { navigate("/recruiter/login"); return; }
-    // Load current skills from dashboard
+    // Load current skills of candidate from dashboard
     candidateApi.dashboard().then((d) => {
       setMySkills([...d.skills.technical, ...d.skills.soft]);
     }).catch(() => {});

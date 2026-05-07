@@ -14,6 +14,7 @@ export default function RecruiterLogin() {
   const { login, register, isAuthenticated, user, logout } = useAuth();
 
   // Candidate state
+  // Controls data for the Candidate actor
   const [candEmail, setCandEmail] = useState("");
   const [candPassword, setCandPassword] = useState("");
   const [candLoading, setCandLoading] = useState(false);
@@ -22,6 +23,7 @@ export default function RecruiterLogin() {
   const [candName, setCandName] = useState("");
 
   // Recruiter state
+  // Controls data for the Recruiter actor
   const [recEmail, setRecEmail] = useState("");
   const [recPassword, setRecPassword] = useState("");
   const [recLoading, setRecLoading] = useState(false);
@@ -32,6 +34,7 @@ export default function RecruiterLogin() {
   const [showCandPassword, setShowCandPassword] = useState(false);
   const [showRecPassword, setShowRecPassword] = useState(false);
 
+  // Directs user to "Candidate Dashboard" or "Candidate Onboarding" (to Upload CV).
   const handleCandidateSubmit = async () => {
     setCandLoading(true);
     setCandError("");
@@ -40,8 +43,8 @@ export default function RecruiterLogin() {
         await register({ email: candEmail, password: candPassword, full_name: candName, role: "candidate" });
         navigate("/candidate/onboarding");
       } else {
-        const loggedUser = await login(candEmail, candPassword);
-        navigate(loggedUser.role === "candidate" ? "/candidate/dashboard" : "/");
+        const user = await login(candEmail, candPassword);
+        navigate(user.role === "candidate" ? "/candidate/dashboard" : "/");
       }
     } catch (err: any) {
       setCandError(err.message || "Authentication failed");
@@ -50,11 +53,13 @@ export default function RecruiterLogin() {
     }
   };
 
+  // Directs user to "Recruiter Dashboard" to "Submit Job Description" or "Rank Candidates".
   const handleRecruiterSubmit = async () => {
     setRecLoading(true);
     setRecError("");
     try {
-      if (recMode === "register") {
+      if (recMode === "register") { 
+        // Includes 'company_name' specifically for the recruiter profile initialization
         await register({ email: recEmail, password: recPassword, full_name: recName, role: "recruiter", company_name: recCompany });
       } else {
         await login(recEmail, recPassword);
