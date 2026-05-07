@@ -208,7 +208,7 @@ router.get("/ats-check", async (req, res) => {
   }
 });
 
-// POST, candidate skill gap added
+// POST, candidate skill gap
 router.post("/skill-gap", async (req, res) => {
   try {
     const { target_role, required_skills } = req.body;
