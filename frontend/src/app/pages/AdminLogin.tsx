@@ -11,7 +11,7 @@ import { useAuth } from "../context/AuthContext";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, user, logout } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,8 +21,8 @@ export default function AdminLogin() {
     setLoading(true);
     setError("");
     try {
-      const user = await login(email, password);
-      if (user.role !== "admin") {
+      const loggedInUser = await login(email, password);
+      if (loggedInUser.role !== "admin") {
         setError("This account is not an admin");
         return;
       }
@@ -33,6 +33,29 @@ export default function AdminLogin() {
       setLoading(false);
     }
   };
+
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative">
+        <div className="absolute top-8 right-8 z-50"><DarkModeToggle /></div>
+        <Card className="p-8 text-center max-w-md w-full">
+          <Shield className="w-12 h-12 text-accent mx-auto mb-4" />
+          <h2 className="text-2xl font-['Playfair_Display'] font-bold mb-2">Already Logged In</h2>
+          <p className="text-muted-foreground font-['DM_Sans'] mb-6">
+            You are currently logged in as a <strong className="capitalize">{user?.role}</strong>. You must logout before logging in to another account.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Button onClick={() => navigate(user?.role === 'admin' ? '/admin/dashboard' : `/${user?.role}/dashboard`)} variant="outline" className="font-['DM_Sans']">
+              Go to Dashboard
+            </Button>
+            <Button onClick={() => logout()} variant="destructive" className="font-['DM_Sans']">
+              Logout
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6 relative">

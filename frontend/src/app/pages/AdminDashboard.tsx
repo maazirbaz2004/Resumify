@@ -5,14 +5,14 @@ import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Users, Briefcase, TrendingUp, Shield, Loader2, UserCheck, UserX, Trash2, Check, X, Clock } from "lucide-react";
+import { Users, Briefcase, TrendingUp, Shield, Loader2, UserCheck, UserX, Trash2, Check, X, Clock, LogOut } from "lucide-react";
 import { DarkModeToggle } from "../components/DarkModeToggle";
 import { useAuth } from "../context/AuthContext";
 import { admin as adminApi } from "../services/api";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const [loading, setLoading] = useState(true);
   const [kpis, setKpis] = useState<any>(null);
   const [users, setUsers] = useState<any[]>([]);
@@ -52,6 +52,11 @@ export default function AdminDashboard() {
     } catch {}
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -73,8 +78,16 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background relative">
       <div className="absolute top-8 right-8 z-50"><DarkModeToggle /></div>
+      
+      {/* Logout button at bottom left for consistency with sidebars */}
+      <div className="absolute bottom-8 left-8 z-50">
+        <Button onClick={handleLogout} variant="outline" className="flex items-center gap-2 border-red-500/20 bg-background/50 hover:bg-red-500/10 text-red-500/80 hover:text-red-500 font-['DM_Sans'] transition-all duration-200 backdrop-blur-sm">
+          <LogOut className="w-4 h-4" />
+          Logout
+        </Button>
+      </div>
 
-      <div className="p-8 max-w-7xl mx-auto">
+      <div className="p-8 max-w-7xl mx-auto pb-24">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Shield className="w-8 h-8 text-accent" />

@@ -45,7 +45,7 @@ async function request(path: string, options: RequestInit = {}) {
 
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
 
-  if (res.status === 401) {
+  if (res.status === 401 && path !== "/auth/login") {
     clearToken();
     window.location.href = "/";
     throw new Error("Session expired");
@@ -84,6 +84,7 @@ export const candidate = {
   },
 
   dashboard: () => request("/candidate/dashboard"),
+  discardResume: () => request("/candidate/resume", { method: "DELETE" }),
 
   atsCheck: (jdText?: string) =>
     request(`/candidate/ats-check${jdText ? `?jd_text=${encodeURIComponent(jdText)}` : ""}`),

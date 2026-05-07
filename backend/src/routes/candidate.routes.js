@@ -110,6 +110,32 @@ router.post("/upload-resume", upload.single("resume"), async (req, res) => {
   }
 });
 
+// DELETE /api/candidate/resume
+router.delete("/resume", async (req, res) => {
+  try {
+    const profile = await pool.query("SELECT id FROM candidate_profiles WHERE user_id = $1", [req.user.id]);
+    if (profile.rows.length === 0) return res.status(404).json({ error: "Profile not found" });
+    const candidateId = profile.rows[0].id;
+    
+    // Clear resume details without deleting the profile or applications
+    await pool.query(
+      `UPDATE candidate_profiles SET 
+       resume_text = NULL, resume_file_url = NULL, resume_parsed_at = NULL, 
+       predicted_role = NULL, confidence = NULL, quality_score = NULL, 
+       ats_score = NULL, skill_coverage = NULL, job_match_score = NULL 
+       WHERE id = $1`, [candidateId]
+    );
+    // Clear skills and history
+    await pool.query("DELETE FROM candidate_skills WHERE candidate_id = $1", [candidateId]);
+    await pool.query("DELETE FROM analysis_history WHERE candidate_id = $1", [candidateId]);
+    
+    res.json({ message: "Resume discarded successfully" });
+  } catch (err) {
+    console.error("[CANDIDATE] Discard resume error:", err);
+    res.status(500).json({ error: "Failed to discard resume" });
+  }
+});
+
 // GET /api/candidate/dashboard
 router.get("/dashboard", async (req, res) => {
   try {

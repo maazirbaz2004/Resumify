@@ -27,7 +27,12 @@ export default function RecruiterProfile() {
     if (!isAuthenticated) { navigate("/recruiter/login"); return; }
     if (!id) return;
     recruiterApi.getCandidateProfile(parseInt(id), jobId ? parseInt(jobId) : undefined)
-      .then(setData)
+      .then((res) => {
+        setData(res);
+        if (res.profile?.application_status === "shortlisted" || res.profile?.application_status === "rejected") {
+          setActionDone(res.profile.application_status);
+        }
+      })
       .catch(() => setData(null))
       .finally(() => setLoading(false));
   }, [isAuthenticated, id, jobId]);

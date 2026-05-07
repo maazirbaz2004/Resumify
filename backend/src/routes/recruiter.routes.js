@@ -95,7 +95,7 @@ router.get("/jobs", async (req, res) => {
   try {
     const rp = await pool.query("SELECT id FROM recruiter_profiles WHERE user_id = $1", [req.user.id]);
     const result = await pool.query(
-      "SELECT * FROM jobs WHERE recruiter_id = $1 ORDER BY created_at DESC", [rp.rows[0].id]
+      "SELECT * FROM jobs WHERE recruiter_id = $1 AND status IN ('published', 'under_review') ORDER BY created_at DESC", [rp.rows[0].id]
     );
     res.json(result.rows);
   } catch (err) {
@@ -142,7 +142,7 @@ router.get("/jobs/:id/candidates", async (req, res) => {
        FROM applications a
        JOIN candidate_profiles cp ON cp.id = a.candidate_id
        JOIN users u ON u.id = cp.user_id
-       WHERE a.job_id = $1
+       WHERE a.job_id = $1 AND a.status != 'rejected'
        ORDER BY a.match_score DESC NULLS LAST`,
       [req.params.id]
     );
@@ -218,26 +218,31 @@ router.get("/candidates/:id", async (req, res) => {
       "SELECT skill_name, skill_type FROM candidate_skills WHERE candidate_id = $1", [c.id]
     );
 
-    let matchData = null, questions = null;
-    if (job_id && c.resume_text) {
-      const job = await pool.query("SELECT description FROM jobs WHERE id = $1", [job_id]);
-      if (job.rows.length > 0) {
-        const [matchRes, questionsRes] = await Promise.all([
-          axios.post(`${AI_URL}/api/ai/candidate-match`, {
-            resume_text: c.resume_text, jd_text: job.rows[0].description,
-          }),
-          axios.post(`${AI_URL}/api/ai/interview-questions`, {
-            resume_text: c.resume_text, jd_text: job.rows[0].description,
-          }),
-        ]);
-        matchData = matchRes.data;
-        questions = questionsRes.data;
+    let matchData = null, questions = null, applicationStatus = null;
+    if (job_id) {
+      const app = await pool.query("SELECT status FROM applications WHERE candidate_id = $1 AND job_id = $2", [c.id, job_id]);
+      if (app.rows.length > 0) applicationStatus = app.rows[0].status;
+
+      if (c.resume_text) {
+        const job = await pool.query("SELECT description FROM jobs WHERE id = $1", [job_id]);
+        if (job.rows.length > 0) {
+          const [matchRes, questionsRes] = await Promise.all([
+            axios.post(`${AI_URL}/api/ai/candidate-match`, {
+              resume_text: c.resume_text, jd_text: job.rows[0].description,
+            }),
+            axios.post(`${AI_URL}/api/ai/interview-questions`, {
+              resume_text: c.resume_text, jd_text: job.rows[0].description,
+            }),
+          ]);
+          matchData = matchRes.data;
+          questions = questionsRes.data;
+        }
       }
     }
 
     res.json({
       profile: { name: c.full_name, email: c.email, phone: c.phone, location: c.location,
-                 predicted_role: c.predicted_role, quality_score: c.quality_score },
+                 predicted_role: c.predicted_role, quality_score: c.quality_score, application_status: applicationStatus },
       skills: {
         technical: skills.rows.filter(s => s.skill_type === "technical").map(s => s.skill_name),
         soft: skills.rows.filter(s => s.skill_type === "soft").map(s => s.skill_name),
