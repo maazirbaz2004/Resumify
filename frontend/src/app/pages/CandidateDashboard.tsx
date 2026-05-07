@@ -6,7 +6,7 @@ import { Card } from "../components/ui/card";
 import { ScoreRing } from "../components/ScoreRing";
 import { SkillPill } from "../components/SkillPill";
 import { Badge } from "../components/ui/badge";
-import { AlertCircle, CheckCircle2, AlertTriangle, Brain, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle, Brain, Loader2, Trash2 } from "lucide-react";
 import { DarkModeToggle } from "../components/DarkModeToggle";
 import { useAuth } from "../context/AuthContext";
 import { candidate as candidateApi } from "../services/api";
@@ -17,16 +17,36 @@ export default function CandidateDashboard() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState("");
+  const [isDiscarding, setIsDiscarding] = useState(false);
+
+  const fetchDashboard = () => {
+    setLoading(true);
+    candidateApi.dashboard()
+      .then(setData)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  const handleDiscard = async () => {
+    if (!confirm("Are you sure you want to discard your resume? You will need to upload a new one to apply for jobs. Existing applications will not be affected.")) return;
+    setIsDiscarding(true);
+    try {
+      await candidateApi.discardResume();
+      setData(null);
+      setError("Resume discarded. Please upload a new one.");
+    } catch (err) {
+      alert("Failed to discard resume");
+    } finally {
+      setIsDiscarding(false);
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/recruiter/login");
       return;
     }
-    candidateApi.dashboard()
-      .then(setData)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    fetchDashboard();
   }, [isAuthenticated]);
 
   if (loading) {
@@ -96,6 +116,14 @@ export default function CandidateDashboard() {
                     Predicted Role: {profile.predicted_role}
                   </Badge>
                 )}
+                <button 
+                  onClick={handleDiscard}
+                  disabled={isDiscarding}
+                  className="flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-md font-['DM_Sans'] text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                  {isDiscarding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                  Discard Resume
+                </button>
                 <DarkModeToggle />
               </div>
             </div>
