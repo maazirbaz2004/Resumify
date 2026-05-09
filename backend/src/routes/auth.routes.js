@@ -8,7 +8,7 @@ const pool = require("../config/db");
 const { generateToken, authMiddleware } = require("../middleware/auth");
 
 const router = express.Router();
-
+//added login exception handlingg
 // POST /api/auth/register
 router.post("/register", async (req, res) => {
   try {
