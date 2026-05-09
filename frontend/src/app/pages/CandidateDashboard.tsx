@@ -271,12 +271,7 @@ export default function CandidateDashboard() {
                     ? " This is a strong skill set showing versatility."
                     : " Consider adding more relevant skills to strengthen your profile."}
                 </p>
-                {analysis?.matches?.length > 0 && (
-                  <p className="text-muted-foreground leading-relaxed">
-                    <span className="font-semibold text-foreground">Top Job Match:</span>{" "}
-                    {analysis.matches[0].title} at {analysis.matches[0].company} ({analysis.matches[0].score}% match)
-                  </p>
-                )}
+
               </div>
             </Card>
           </motion.div>
