@@ -3,7 +3,7 @@
  */
 const { Pool } = require("pg");
 require("dotenv").config();
-
+//fixed pool error
 const pool = new Pool({
   host: process.env.DB_HOST || "localhost",
   port: parseInt(process.env.DB_PORT || "5432"),
